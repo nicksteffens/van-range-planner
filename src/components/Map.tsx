@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import type { LatLng } from 'leaflet'
 import MapClickHandler from './MapClickHandler'
+import RangeRings from './RangeRings'
 
 const US_CENTER: [number, number] = [39.8283, -98.5795]
 const DEFAULT_ZOOM = 5
@@ -8,9 +9,11 @@ const DEFAULT_ZOOM = 5
 interface MapProps {
   pin: LatLng | null
   onPinChange: (latlng: LatLng) => void
+  milesPerDay: number
+  maxDays: number
 }
 
-export default function Map({ pin, onPinChange }: MapProps) {
+export default function Map({ pin, onPinChange, milesPerDay, maxDays }: MapProps) {
   return (
     <MapContainer
       center={US_CENTER}
@@ -24,11 +27,14 @@ export default function Map({ pin, onPinChange }: MapProps) {
       />
       <MapClickHandler onMapClick={onPinChange} />
       {pin && (
-        <Marker position={pin}>
-          <Popup>
-            {pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}
-          </Popup>
-        </Marker>
+        <>
+          <Marker position={pin}>
+            <Popup>
+              {pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}
+            </Popup>
+          </Marker>
+          <RangeRings center={pin} milesPerDay={milesPerDay} maxDays={maxDays} />
+        </>
       )}
     </MapContainer>
   )
