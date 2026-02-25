@@ -1,7 +1,9 @@
+import Map from './components/Map'
+
 function App() {
   return (
     <div className="h-full w-full">
-      <h1>Van Range Planner</h1>
+      <Map />
     </div>
   )
 }
