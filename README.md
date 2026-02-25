@@ -4,6 +4,7 @@
 
 **Status**: Planning & Research Phase
 **Type**: Web App (PWA)
+**Maps**: Leaflet + OpenStreetMap (free, no API key needed)
 
 ---
 

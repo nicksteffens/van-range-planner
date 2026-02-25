@@ -134,18 +134,27 @@ src/
 | Layer | Choice | Why |
 |-------|--------|-----|
 | Framework | React + TypeScript | Familiar, good ecosystem |
-| Maps | Google Maps JavaScript API | Best satellite/terrain imagery for trip planning |
-| Maps Wrapper | `@vis.gl/react-google-maps` | Modern React integration |
-| Isochrones | Mapbox Isochrone API | Good free tier, distance-based isochrones |
+| Maps | Leaflet + OpenStreetMap | 100% free, no API key, no billing account |
+| Maps Wrapper | `react-leaflet` | Mature React bindings for Leaflet |
+| Isochrones | OpenRouteService | Free tier (500 req/day), open source |
 | Offline | Service Worker + IndexedDB | PWA offline capability |
 | Styling | Tailwind CSS | Quick UI for controls |
 | Build | Vite | Fast, simple |
 | Storage | localStorage → IndexedDB | Trips saved locally, no backend |
 
+### Why Leaflet + OpenStreetMap
+
+- **Completely free** - no API key, no credit card, no billing account
+- **No usage limits** on map tile loading (uses public OSM tile servers)
+- **Open source** - Leaflet is ~42KB, lightweight and fast
+- **`L.circle()`** natively supports radius in meters - perfect for range rings
+- **Good enough for a prototype** - clean road map view, no satellite needed
+- OSM data also powers the height restriction queries (same data source)
+
 ## Implementation Phases
 
 ### Phase 1: Pin + Circles (MVP)
-- [ ] Vite + React + TypeScript + Google Maps setup
+- [ ] Vite + React + TypeScript + Leaflet setup
 - [ ] Drop a pin on the map or use current location
 - [ ] Draw concentric 350mi straight-line circles (Day 1-5)
 - [ ] Color-code rings by day with labels
@@ -160,7 +169,7 @@ src/
 - [ ] Remove/reorder waypoints
 
 ### Phase 3: Driving Distance Isochrones
-- [ ] Integrate Mapbox Isochrone API
+- [ ] Integrate OpenRouteService Isochrone API
 - [ ] Toggle between circle mode and isochrone mode
 - [ ] Cache isochrone results to reduce API calls
 - [ ] Show realistic drivable area shape
@@ -226,17 +235,17 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            // Cache Google Maps tiles for offline use
-            urlPattern: /^https:\/\/maps\.googleapis\.com\/.*/i,
+            // Cache OpenStreetMap tiles for offline use
+            urlPattern: /^https:\/\/tile\.openstreetmap\.org\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'google-maps-tiles',
+              cacheName: 'osm-tiles',
               expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
           {
             // Cache isochrone API responses
-            urlPattern: /^https:\/\/api\.mapbox\.com\/isochrone\/.*/i,
+            urlPattern: /^https:\/\/api\.openrouteservice\.org\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'isochrone-cache',
@@ -328,7 +337,7 @@ export default defineConfig({
 
 - **No background location tracking** - GPS only works while the app is open (fine for this use case)
 - **Storage cap ~50MB** - enough for app + cached tiles of areas you've browsed, but can't pre-download the entire US map
-- **No access to Apple Maps** - uses Google Maps in browser (actually a plus for this project)
+- **No access to Apple Maps** - uses OpenStreetMap tiles in browser (works great)
 - **Safari WebKit only** - iOS forces all browsers to use WebKit, so PWA rendering is consistent
 
 ## Open Questions
