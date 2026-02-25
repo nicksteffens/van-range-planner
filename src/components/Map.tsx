@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { divIcon, type LatLng } from 'leaflet'
 import MapClickHandler from './MapClickHandler'
 import RangeRings from './RangeRings'
+import FlyToPin from './FlyToPin'
 
 const pinIcon = divIcon({
   className: '',
@@ -43,6 +44,7 @@ export default function Map({ pin, onPinChange, milesPerDay, maxDays }: MapProps
       <MapClickHandler onMapClick={onPinChange} />
       {pin && (
         <>
+          <FlyToPin position={pin} />
           <Marker position={pin} icon={pinIcon}>
             <Popup>
               {pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}
